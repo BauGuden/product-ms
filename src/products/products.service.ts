@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from 'src/Prisma.service';
@@ -6,9 +6,16 @@ import { PaginationDto } from 'src/common';
 import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
-export class ProductsService {
+export class ProductsService implements OnModuleInit {
 
   constructor(private prisma: PrismaService) {}
+
+  private readonly logger = new Logger('ProductsService');
+
+  async onModuleInit() {
+    await this.prisma.$connect();
+    this.logger.log('ProductsService initialized and connected to the database');
+  }
 
   async create(createProductDto: CreateProductDto) {
 
